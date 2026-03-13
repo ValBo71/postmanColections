@@ -37,5 +37,29 @@ public class LoginPage
         await _page.FillAsync(LoginSelectors.UsernameInput, username);
         await _page.FillAsync(LoginSelectors.PasswordInput, password);
         await _page.ClickAsync(LoginSelectors.LoginButton);
+
+        try 
+        {
+            var fwdBtn = _page.GetByText("Напред", new() { Exact = true }).First;
+            await fwdBtn.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 5000 });
+            await fwdBtn.ClickAsync();
+            await Task.Delay(2000);
+        }
+        catch 
+        { 
+            // Interstitial may not appear
+        }
+
+        try 
+        {
+            var mailBtn = _page.Locator("text='АБВ поща'").First;
+            await mailBtn.ClickAsync(new LocatorClickOptions { Timeout = 3000 });
+        }
+        catch 
+        { 
+            // May already be navigating to mail
+        }
+        
+        await _page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
     }
 }
